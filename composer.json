@@ -1,0 +1,22 @@
+{
+    "name": "vandal/currency-operations",
+    "description": "A small demo on fee calculation happening within the operations in a financial domain",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^8.4"
+    },
+    "authors": [
+        {
+            "name": "Ivan Vasilchev",
+            "email": "vandalest@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"Ivan\\": "src/"}
+    },
+    "require": {
+        "beberlei/assert": "^3.2",
+        "moneyphp/money": "^3.2",
+        "php": "^7.2"
+    }
+}
