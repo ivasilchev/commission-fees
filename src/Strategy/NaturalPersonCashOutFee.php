@@ -4,7 +4,7 @@ namespace Ivan\Strategy;
 
 use Ivan\Repository\OperationDataRepository;
 use Ivan\ValueObject\OperationData;
-use Money\Converter;
+use Ivan\Money\Converter;
 use Money\Money;
 use DateTimeImmutable;
 

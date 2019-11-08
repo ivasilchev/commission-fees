@@ -4,7 +4,7 @@ namespace Ivan\Test\Processor;
 
 use Ivan\Processor\CommissionFeeProcessor;
 use Ivan\Strategy\Resolver;
-use Ivan\Strategy\CashInFee;
+use Ivan\Strategy\FeeCalculation;
 use PHPUnit\Framework\TestCase;
 use Ivan\ValueObject\UserId;
 use Money\Currency;
@@ -19,7 +19,7 @@ class ComissionFeeProcessorTest extends TestCase
     private function getResolverMock(): Resolver
     {
         $resolverMock = $this->prophesize(Resolver::class);
-        $strategyMock = $this->prophesize(CashInFee::class);
+        $strategyMock = $this->prophesize(FeeCalculation::class);
         $strategyMock->calculate(Argument::any())->willReturn(new Money(31337, new Currency('EUR')));
         $resolverMock->resolveFor(Argument::any())->willReturn($strategyMock->reveal());
 
@@ -49,7 +49,7 @@ class ComissionFeeProcessorTest extends TestCase
 
         $result = $processor->process($operationData);
 
-        $this->assertEquals($operationData, $result['operationData']);
-        $this->assertEquals(31337, $result['fee']->getAmount());
+        $this->assertEquals($operationData, $result->getSourceData());
+        $this->assertEquals(31337, $result->getFeeAmount()->getAmount());
     }
 }

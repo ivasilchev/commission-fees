@@ -3,7 +3,7 @@
 namespace Ivan\Strategy;
 
 use Ivan\ValueObject\OperationData;
-use Money\Converter;
+use Ivan\Money\Converter;
 use Money\Money;
 
 class CashInFee implements FeeCalculation

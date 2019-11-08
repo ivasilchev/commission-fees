@@ -1,6 +1,6 @@
 <?php
 
-namespace Ivan\Test\Processor;
+namespace Ivan\Test\Functional\Application;
 
 use Ivan\Application\CommissionFeeApplication;
 use Ivan\Application\Configuration;

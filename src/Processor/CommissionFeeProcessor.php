@@ -4,6 +4,7 @@ namespace Ivan\Processor;
 
 use Ivan\Strategy\Resolver;
 use Ivan\ValueObject\OperationData;
+use Ivan\ValueObject\CalculationResult;
 
 class CommissionFeeProcessor implements FeeProcessor
 {
@@ -14,12 +15,9 @@ class CommissionFeeProcessor implements FeeProcessor
         $this->strategyResolver = $strategyResolver;
     }
 
-    public function process(OperationData $operationData): array
+    public function process(OperationData $operationData): CalculationResult
     {
         $strategy = $this->strategyResolver->resolveFor($operationData);
-        return [
-            'operationData' => $operationData,
-            'fee' => $strategy->calculate($operationData)
-        ];
+        return new CalculationResult($strategy->calculate($operationData), $operationData);
     }
 }

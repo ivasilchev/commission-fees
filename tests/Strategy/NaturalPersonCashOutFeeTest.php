@@ -12,13 +12,20 @@ use Ivan\ValueObject\UserType;
 use Money\Currency;
 use Money\Money;
 use PHPUnit\Framework\TestCase;
-use Money\Converter;
-use Money\Currencies\ISOCurrencies;
-use Money\Exchange\FixedExchange;
+use Ivan\Money\Converter;
+use Prophecy\Argument;
 
 class NaturalPersonCashOutFeeTest extends TestCase
 {
     const DEFAULT_FEE_PERCENT = 0.003;
+
+    /** @var Converter */
+    private $converter;
+
+    public function setUp(): void
+    {
+        $this->converter = $this->createConverter();
+    }
 
     /** @test */
     public function it_applies_1000_EUR_free_of_charge_rule(): void
@@ -34,7 +41,7 @@ class NaturalPersonCashOutFeeTest extends TestCase
             self::DEFAULT_FEE_PERCENT,
             Money::EUR(1000 * 100),
             $repository,
-            $this->getConverter()
+            $this->converter
         );
 
         $fee = $strategy->calculate($this->createOperationData('2011-11-23', 100, 'EUR'));
@@ -42,62 +49,11 @@ class NaturalPersonCashOutFeeTest extends TestCase
         $this->assertTrue($fee->equals(Money::EUR(0)));
     }
 
-    /** @test */
-    public function it_calculates_default_fee_for_operations_after_the_third(): void
+    private function createConverter(): Converter
     {
-        $operations = [
-            $this->createOperationData('2016-01-06', 30000, 'JPY'),
-            $this->createOperationData('2016-01-07', 1000 * 100, 'EUR'),
-            $this->createOperationData('2016-01-07', 100 * 100 , 'USD'),
-            $this->createOperationData('2016-01-10', 100 * 100, 'EUR')
-        ];
-
-        $repository = $this->getRepository($operations);
-
-        $strategy = new NaturalPersonCashOutFee(
-            self::DEFAULT_FEE_PERCENT,
-            Money::EUR(1000 * 100),
-            $repository,
-            $this->getConverter()
-        );
-
-        $result = [];
-
-        foreach ($repository->findAll() as $operation) {
-            $fee = $strategy->calculate($operation);
-            $result[] = $fee->getAmount();
-        }
-
-        $expected = [
-            0,
-            70,
-            30,
-            30,
-        ];
-
-        $this->assertEquals($expected, $result);
-    }
-
-
-    private function getConverter(): Converter
-    {
-        $exchange = new FixedExchange([
-            'EUR' => [
-                'EUR' => 1,
-                'USD' => 1.1497,
-                'JPY' => 129.53
-            ],
-            'JPY' => [
-                'JPY' => 1,
-                'EUR' => 1 / 129.53
-            ],
-            'USD' => [
-                'USD' => 1,
-                'EUR' => 1 / 1.1497,
-            ]
-        ]);
-
-        return new Converter(new ISOCurrencies(), $exchange);
+        $converter = $this->prophesize(Converter::class);
+        $converter->convert(Argument::cetera())->willReturnArgument(0);
+        return $converter->reveal();
     }
 
     private function createOperationData($date, $amount, $currency): OperationData

@@ -26,11 +26,11 @@ transparently.
 - Strategy - Used to abstract the fee calculation logic 
 - Resolver - Used to determine which fee calculation strategy to use for particular input data 
 - ValueObject - Encapsulate data in immutable value objects 
+- Money - Decoupling from moneyphp/moneyphp conversion implementation 
 
 **Decisions made** 
 
 - Delegated currency conversion and handling to an external mature and well tested framework, as it seems a bit out of scope to handle internally. See: https://github.com/moneyphp/money
-- 
 
 **Requirements** 
 

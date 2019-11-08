@@ -2,10 +2,12 @@
 
 namespace Ivan\Application;
 
+use Ivan\Money\MoneyConverterDecorator;
 use Ivan\Strategy\FixedStrategyResolver;
 use Ivan\Repository\InMemoryOperationDataRepository;
 use Ivan\Strategy\Resolver;
-use Money\Converter;
+use Money\Converter as MoneyConverter;
+use Ivan\Money\Converter;
 use Money\Exchange\FixedExchange;
 use Money\Currencies\ISOCurrencies;
 use Ivan\Strategy\CashInFee;
@@ -47,7 +49,7 @@ class CommissionFeeApplication
 
         foreach ($repository->findAll() as $operationData) {
             $fee =  $processor->process($operationData);
-            $output[] = (float)$formatter->format($fee['fee']);
+            $output[] = $formatter->format($fee->getFeeAmount());
         }
 
         return $output;
@@ -66,7 +68,9 @@ class CommissionFeeApplication
     {
         $exchange = new FixedExchange($this->configuration::EXCHANGE_RATES);
 
-        return new Converter(new ISOCurrencies(), $exchange);
+        $converter = new MoneyConverter(new ISOCurrencies(), $exchange);
+
+        return new MoneyConverterDecorator($converter);
     }
 
     private function createCashInFeeStrategy(): CashInFee
